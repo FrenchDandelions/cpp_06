@@ -7,8 +7,8 @@ RESET=\033[0m
 SRC_FILES = main.cpp \
 			ScalarConverter.cpp \
 
-INCLUDE = Colors.hpp \
-			ScalarConverter.hpp \
+INCLUDE = ScalarConverter.hpp \
+			SmartPTR.txx \
 
 OBJECTS = $(SRC_FILES:.cpp=.o)
 CXX = c++
