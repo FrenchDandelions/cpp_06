@@ -59,6 +59,8 @@ int isNone(const std::string &str)
     {
         for(std::string::const_iterator it2 = str.begin(); it2 != str.end(); it2++)
         {
+            if(*it2 == '.' && !std::isdigit(*(it2 + 1)))
+                return(1);
             if(*it2 == '.' || *it2 == 'f')
                 continue;
             else if(!std::isdigit(*it2))
