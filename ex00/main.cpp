@@ -8,5 +8,6 @@ int main(int argc, char**argv)
         ScalarConverter::convert(str);
     }
     else
-        ;
+        std::cerr << "Error, wrong argument count, it should be: "
+        "executable arg" << std::endl;
 }

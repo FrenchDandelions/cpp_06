@@ -1,6 +1,7 @@
 #include "ScalarConverter.hpp"
-#include <sstream>
 #include <cctype>
+#include <exception>
+#include <cstdlib>
 
 ScalarConverter::ScalarConverter()
 {
@@ -20,12 +21,6 @@ ScalarConverter& ScalarConverter::operator=(const ScalarConverter &copy)
 ScalarConverter::~ScalarConverter()
 {
 }
-
-// int isChar(const std::string &str)
-// {
-//     int i = 0;
-//     int points = 0;
-// }
 
 void printPseudoLit(const std::string &str)
 {
@@ -55,34 +50,21 @@ int ScalarConverter::isPseudoLiteral(const std::string &str)
     return(0);
 }
 
-
-// void printChar(const std::string &str)
-// {
-
-// }
-
-// void printInt(const std::string &str)
-// {
-    
-// }
-
-// void printFloat(const std::string &str)
-// {
-    
-// }
-
-// void printDouble(const std::string &str)
-// {
-    
-// }
-
 int isNone(const std::string &str)
 {
     int dots_count = 0;
     int f_count = 0;
     std::string::const_iterator it = str.begin();
-    if(str.length() > 1 && !std::isdigit(str[1]))
-        return(1);
+    if(str.length() > 1)
+    {
+        for(std::string::const_iterator it2 = str.begin(); it2 != str.end(); it2++)
+        {
+            if(*it2 == '.' || *it2 == 'f')
+                continue;
+            else if(!std::isdigit(*it2))
+                return(1);
+        }
+    }
     while(it++ != str.end())
     {
         if(*it == '.')
@@ -106,15 +88,22 @@ void ScalarConverter::convert(const std::string &str)
         return ;
     if(isNone(str))
         return(printErr());
-    std::stringstream ss;
-    ss << str;
-    int number;
-    ss >> number;
-    std::cout << number << std::endl;
-    float fnumber = static_cast<float>(number);
-    std::cout << fnumber << std::endl;
-    // printChar(str);
-    // printInt(str);
-    // printFloat(str);
-    // printDouble(str);
+    double numd = std::atof(str.c_str());
+    char c = static_cast<char>(numd);
+    if(std::isprint(c))
+        std::cout << "char: '" << c << "'" << std::endl;
+    else
+        std::cout << "char: Non displayable" << std::endl;
+    int numi = static_cast<int>(numd);
+    std::cout << "int: " << numi << std::endl;
+    if(numd - numi != 0)
+    {
+        std::cout << "float: " << numd << "f" << std::endl;
+        std::cout << "double: " << numd << std::endl;
+    }
+    else
+    {
+        std::cout << "float: " << numd << ".0f" << std::endl;
+        std::cout << "double: " << numd <<  ".0" << std::endl;
+    }
 }

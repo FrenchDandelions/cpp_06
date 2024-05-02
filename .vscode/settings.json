@@ -4,6 +4,7 @@
         "atomic": "cpp",
         "bit": "cpp",
         "*.tcc": "cpp",
+        "*.tpp": "cpp",
         "*.txx": "cpp",
         "cctype": "cpp",
         "clocale": "cpp",
@@ -47,6 +48,7 @@
         "span": "cpp",
         "stdexcept": "cpp",
         "streambuf": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "sstream": "cpp"
     }
 }

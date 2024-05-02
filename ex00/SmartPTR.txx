@@ -1,5 +1,5 @@
-#ifndef SMARTPTR_HPP
-# define SMARTPTR_HPP
+#ifndef SMARTPTR_TXX
+# define SMARTPTR_TXX
 
 #include <iostream>
 
