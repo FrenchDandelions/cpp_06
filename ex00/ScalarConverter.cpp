@@ -63,10 +63,12 @@ int isNone(const std::string &str)
                 return(1);
             if(*it2 == '.' || *it2 == 'f')
                 continue;
-            else if(!std::isdigit(*it2))
+            else if(!std::isdigit(*it2) &&  it2 != it)
                 return(1);
         }
     }
+    else if(!std::isdigit(*it))
+        return(1);
     while(it++ != str.end())
     {
         if(*it == '.')
