@@ -1,11 +1,14 @@
 #include "ScalarConverter.hpp"
 #include <cctype>
-#include <exception>
 #include <cstdlib>
 #include <errno.h>
 #include <cmath>
 #include <limits>
 #include <limits.h>
+
+void printChar(const char *s, int i, double number, int imp);
+void printInt(const char *s, int i, double number, int imp);
+void printFloat(const char *s, int i, double number, int imp);
 
 ScalarConverter::ScalarConverter()
 {
@@ -96,10 +99,6 @@ void printErr(void)
     std::cerr << "Error, format is incorrect" << std::endl;
 }
 
-void printChar(const char *s, int i, double number, int imp);
-void printInt(const char *s, int i, double number, int imp);
-void printFloat(const char *s, int i, double number, int imp);
-
 void printDouble(const char *s, int i, double number, int imp)
 {
     if(i == 0)
@@ -113,16 +112,32 @@ void printDouble(const char *s, int i, double number, int imp)
             printFloat(s, 1, number, imp);
             std::cout << "double: impossible" << std::endl;
         }
+        else if(c > std::numeric_limits<float>::max() || c < (std::numeric_limits<float>::max() *-1))
+        {
+            imp = 1;
+            printChar(s, 1, number, imp);
+            printInt(s, 1, number, imp);
+            printFloat(s, 1, number, imp);
+            std::cout << "double: " << c << std::endl;
+        }
         else
         {
+            float f = static_cast<float>(c);
             int check = static_cast<int>(c);
-            printChar(s, 1, c, imp);
-            printInt(s, 1, c, imp);
-            printFloat(s, 1, c, imp);
-            if(c - check > 0)
-                std::cout << "double: " << c << std::endl;
+            char ch = static_cast<char>(c);
+            if(check < 0 || check > 255)
+                printChar(s, i, 0 ,1);
+            else if(std::isprint(ch))
+                std::cout << "char: '" << ch << "'" << std::endl;
             else
-                std::cout << "double: " << c << ".0" << std::endl;
+                std::cout << "char: Non displayable" << std::endl;
+            long int nums = std::strtol(s, NULL, 10);
+            if(nums > INT_MIN && nums < INT_MAX)
+                std::cout << "int: " << check << std::endl;
+            else
+                std::cout << "int: impossible" << std::endl;
+            std::cout << "float: " << f << "f" << std::endl;
+            std::cout << "double: " << c << std::endl;
         }
     }
     else
@@ -148,18 +163,23 @@ void printDouble(const char *s, int i, double number, int imp)
 
 void printFloat(const char *s, int i, double number, int imp)
 {
+    if(imp)
+    {
+        std::cout << "float: impossible" << std::endl;
+        return;
+    }
     if(i == 0)
     {
         double numd = std::strtod(s, NULL);
-        if(errno == ERANGE || numd > std::numeric_limits<float>::max() || numd < (std::numeric_limits<float>::max() *-1))
+        if((numd > std::numeric_limits<float>::max() || numd < (std::numeric_limits<float>::max() *-1)) && errno != ERANGE)
         {
             imp = 1;
             printChar(s, 1, number, imp);
             printInt(s, 1, number, imp);
             std::cout << "float: impossible" << std::endl;
-            printDouble(s, 1, number, imp);
+            std::cout << "double: " << numd << std::endl;
         }
-        else
+        else if (errno == ERANGE)
         {
             float c = static_cast<float>(numd);
             int check = static_cast<int>(numd);
@@ -173,23 +193,24 @@ void printFloat(const char *s, int i, double number, int imp)
                 std::cout << "float: " << c << ".0f" << std::endl;
             printDouble(s, 1, numd, imp);
         }
-    }
-    else
-    {
-        if(imp)
-            std::cout << "float: impossible" << std::endl;
         else
         {
-            float c = static_cast<float>(number);
-            if(c > std::numeric_limits<float>::max() || c < (std::numeric_limits<float>::max() *-1))
-                imp = 1;
-            int check = static_cast<int>(number);
-            if(imp == 1)
-                std::cout << "float: impossible" << std::endl;
-            else if(c - check > 0)
-                std::cout << "float: " << c << "f" << std::endl;
+            float c = static_cast<float>(numd);
+            int check = static_cast<int>(numd);
+            char ch = static_cast<char>(numd);
+            if(check < 0 || check > 255)
+                printChar(s, i, 0 ,1);
+            else if(std::isprint(ch))
+                std::cout << "char: '" << ch << "'" << std::endl;
             else
-                std::cout << "float: " << c << ".0f" << std::endl;
+                std::cout << "char: Non displayable" << std::endl;
+            long int nums = std::strtol(s, NULL, 10);
+            if(nums > INT_MIN && nums < INT_MAX)
+                std::cout << "int: " << check << std::endl;
+            else
+                std::cout << "int: impossible" << std::endl;
+            std::cout << "float: " << c << "f" << std::endl;
+            std::cout << "double: " << numd << std::endl;
         }
     }
     return;
@@ -197,6 +218,12 @@ void printFloat(const char *s, int i, double number, int imp)
 
 void printInt(const char *s, int i, double number, int imp)
 {
+    if(imp)
+    {
+        std::cout << "int: impossible" << std::endl;
+        return;
+    }
+    (void)number;
     if(i == 0)
     {
         long int numd = std::strtol(s, NULL, 10);
@@ -207,38 +234,36 @@ void printInt(const char *s, int i, double number, int imp)
             std::cout << "int: impossible" << std::endl;
             number = std::strtod(s, NULL);
             if(errno == ERANGE || number > std::numeric_limits<float>::max() || number < (std::numeric_limits<float>::max() *-1))
-                imp = 1;
+                printFloat(s, i, number, imp);
             else
-                imp = 0;
-            printFloat(s, 1, number, imp);
+            {
+                float numf = static_cast<float>(numd);
+                std::cout << "float: " << numf << ".0f" << std::endl;
+            }
             number = std::strtod(s, NULL);
             if(number > std::numeric_limits<double>::max() || number < (std::numeric_limits<double>::max() *-1))
-                imp = 1;
+                printDouble(s, 1, number, imp);
             else
-                imp = 0;
-            printDouble(s, 1, number, imp);
+            {
+                number = static_cast<double>(numd);
+                std::cout << "double: " << number << ".0" << std::endl;
+            }
         }
         else
         {
             int c = static_cast<int>(numd);
-            printChar(s, 1, static_cast<double>(c), imp);
+            char ch = static_cast<char>(numd);
+            float f = static_cast<float>(numd);
+            number = static_cast<double>(numd);
+            if(c < 0 || c > 255)
+                printChar(s, i, 0 ,1);
+            else if(std::isprint(ch))
+                std::cout << "char: '" << ch << "'" << std::endl;
+            else
+                std::cout << "char: Non displayable" << std::endl;
             std::cout << "int: " << c << std::endl;
-            printFloat(s, 1, static_cast<double>(c), imp);
-            printDouble(s, 1, static_cast<double>(c), imp);
-        }
-    }
-    else
-    {
-        long int num = std::strtol(s, NULL, 10);
-        if(errno == ERANGE || num > INT_MAX || num < INT_MIN)
-                imp = 1;
-        if(imp)
-            std::cout << "int: impossible" << std::endl;
-        else
-        {
-            
-            int c = static_cast<int>(number);
-            std::cout << "int: " << c << std::endl;
+            std::cout << "float: " << f << ".0f" << std::endl;
+            std::cout << "double: " << number << ".0" << std::endl;
         }
     }
     return;
@@ -251,6 +276,7 @@ void printChar(const char *s, int i, double number, int imp)
         std::cout << "char: impossible" << std::endl;
         return;
     }
+    (void)number;
     if(i == 0)
     {
         char c = static_cast<char>(s[0]);
@@ -259,21 +285,18 @@ void printChar(const char *s, int i, double number, int imp)
         else
             std::cout << "char: Non displayable" << std::endl;
         double numd = static_cast<double>(c);
-        printInt(s, 1, numd, imp);
-        printFloat(s, 1, numd, imp);
-        printDouble(s, 1, numd, imp);
-    }
-    else
-    {
-        char c = static_cast<char>(number);
-        if(imp || number < 0 || number > 255)
-            std::cout << "char: impossible" << std::endl;
+        int num = static_cast<int>(c);
+        int numf = static_cast<float>(c);
+        std::cout << "int: " << num << std::endl;
+        if(numf - num > 0)
+        {
+            std::cout << "float: " << numf << "f" << std::endl;
+            std::cout << "double: " << numd << std::endl;
+        }
         else
         {
-            if(std::isprint(c))
-                std::cout << "char: '" << c << "'" << std::endl;
-            else
-                std::cout << "char: Non displayable" << std::endl;
+            std::cout << "float: " << numf << ".0f" << std::endl;
+            std::cout << "double: " << numd << ".0" << std::endl;
         }
     }
     return;

@@ -8,7 +8,6 @@ SRC_FILES = main.cpp \
 			ScalarConverter.cpp \
 
 INCLUDE = ScalarConverter.hpp \
-			SmartPTR.txx \
 
 OBJECTS = $(SRC_FILES:.cpp=.o)
 CXX = c++
