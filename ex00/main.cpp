@@ -9,5 +9,5 @@ int main(int argc, char**argv)
     }
     else
         std::cerr << "Error, wrong argument count, it should be: "
-        "executable arg" << std::endl;
+        "./ScalarConverter arg" << std::endl;
 }

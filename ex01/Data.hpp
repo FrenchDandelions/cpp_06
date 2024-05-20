@@ -15,6 +15,8 @@ class Data
         Data(const Data &copy);
         Data& operator= (const Data &copy);
         ~Data();
+        std::string getStr(void);
+        int getValue(void);
 };
 
 #endif

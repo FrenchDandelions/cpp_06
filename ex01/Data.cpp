@@ -23,6 +23,16 @@ Data& Data::operator=(const Data& copy)
     return(*this);
 }
 
+std::string Data::getStr()
+{
+    return(this->_str);
+}
+
+int Data::getValue()
+{
+    return(this->_value);
+}
+
 Data::~Data()
 {
 }
